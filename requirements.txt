@@ -4,3 +4,4 @@ notebook
 sympy
 matplotlib
 scipy
+ipywidgets
