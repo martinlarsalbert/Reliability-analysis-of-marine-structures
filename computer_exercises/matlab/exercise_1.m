@@ -1,7 +1,7 @@
 close all;
 clear all;
 clc;
-addpath('C:\\Dev\\reliability-analysis-of-marine-structures\wafo_old')
+addpath('../../wafo_old')
 initwafo
 
 N=10000;
