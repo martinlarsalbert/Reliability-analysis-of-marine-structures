@@ -5,3 +5,4 @@ sympy
 matplotlib
 scipy
 ipywidgets
+jupyterthemes
