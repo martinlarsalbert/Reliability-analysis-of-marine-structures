@@ -5,3 +5,5 @@ sympy
 matplotlib
 scipy
 ipywidgets
+probscale
+pytest
