@@ -6,3 +6,5 @@ matplotlib
 scipy
 ipywidgets
 jupyterthemes
+probscale
+pytest
