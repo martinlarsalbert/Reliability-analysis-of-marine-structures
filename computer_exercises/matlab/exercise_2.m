@@ -52,5 +52,9 @@ subplot(4,1,4);
 wweibplot(atl)
 
 %%
+% 2.2	Estimation errors (Mean and variance of the estimated parameters)
+% In the WAFO toolbox the ML-method has been implemented in “wgumbfit”, “wweibfit”, and “wraylfit” for the purpose of estimating the parameters in a Gumbel, Weibull, and Rayleigh distributions, respectively.
+% •	Please compute the two parameters by the WAFO routine “wgumbfit”, and then compare with that got from above direct calculation.
 
-
+figure()
+[phat, covm]=wgumbfit(atl);
