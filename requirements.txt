@@ -8,3 +8,4 @@ ipywidgets
 jupyterthemes
 probscale
 pytest
+statsmodels
