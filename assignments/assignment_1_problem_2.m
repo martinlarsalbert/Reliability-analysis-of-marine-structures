@@ -19,17 +19,16 @@ plot(A, N);
 xlabel('A (Crack length)');
 ylabel('N (Number of oscillations)');
 
+
 %%
 % Calculate dNdA Numerically:
 dNdA = gradient(N,A); 
-
-
 
 figure(2);
 plot(A, dNdA);
 xlabel('A (Crack length)');
 ylabel('dN/dA');
-hold on;
+legend('Numerical derivation');
 
 %%
 % regress Paris formula dN/dA = beta*A^alpha
@@ -63,10 +62,25 @@ ylabel('ln(dN/dA)');
 beta = exp(c_0);
 alpha = c_1;
 dNdA_regress = beta.*A.^alpha;
-figure(2);
+
+figure(4);
+plot(A, dNdA);
+hold on;
+xlabel('A (Crack length)');
+ylabel('dN/dA');
+
 plot(A, dNdA_regress);
 legend_regress = ['regression (\alpha:',num2str(alpha,'%0.4f'), '\beta:' num2str(beta,'%0.0f'),')'];
 legend('Numerical derivation',legend_regress);
+
+N_regress = cumtrapz(A,dNdA_regress);
+figure(5);
+plot(A, N);
+hold on;
+plot(A, N_regress);
+xlabel('A (Crack length)');
+ylabel('N (Number of oscillations)');
+legend('Measurement','Numerical integration of Paris Law','Location','NorthWest');
 
 % Manual Least square fit:
 error = y - (c_0 + c_1*x_1);
@@ -115,11 +129,11 @@ end
 epsilon = y - y_regress;
 
 % Check the normal distribution
-figure()
+figure(6)
 normplot(epsilon);
 
 % Check the constant variance
-figure()
+figure(7)
 plot(y,epsilon, 'bo');
 hold on;
 xlabel('y=ln(dN/dA)');
@@ -134,7 +148,7 @@ legend('\epsilon','error trend');
 
 
 % Check the correlation between the residuals and independent variables
-figure()
+figure(8)
 plot(x_1,epsilon,'r*');
 hold on;
 xlabel('x_1=ln(A)');
@@ -149,7 +163,7 @@ legend('\epsilon','error trend');
 
 n_parts = 2;
 part_length = floor(length(epsilon)/n_parts);
-figure();
+figure(9);
 hold on;
 legends = {}
 for nn=1:(n_parts)
@@ -163,6 +177,151 @@ end
 legend(legends);
 xlabel('x_1=ln(A)');
 ylabel('Residual error \epsilon');
+
+%%
+% Second part
+%Compute the confidence intervals for   example   the   95%   confidence   intervals)  of   theestimated parameters ^α, ^β
+
+[coeffs,coeffs_intervalls_95] = regress(y,X);
+c_0_95_intervall = coeffs_intervalls_95(1,:);
+c_1_95_intervall = coeffs_intervalls_95(2,:);
+beta_95_intervall = exp(c_0_95_intervall);
+alpha_95_intervall = c_1_95_intervall;
+
+invall_alpha = 0.05;
+
+%% c_0
+c_0s = y-(c_1*x_1)
+MU = mean(c_0s);
+SIGMA = std(c_0s);
+c_0_min = norminv(invall_alpha/2,MU,SIGMA);
+c_0_max = norminv(1-invall_alpha/2,MU,SIGMA);
+c_0_95_intervall2 = [c_0_min,c_0_max];
+
+figure(10);
+x_c0 = linspace(MU-3*SIGMA,MU+3*SIGMA,100);
+Y = normcdf(x_c0,MU,SIGMA);
+
+plot(x_c0,Y,'b-');
+hold on;
+plot([c_0_min,c_0_min],[0,normcdf(c_0_min,MU,SIGMA)],'k.:');
+text(c_0_min,0.02,num2str(c_0_min));
+
+plot([c_0_max,c_0_max],[0,normcdf(c_0_max,MU,SIGMA)],'k.:');
+text(c_0_max,0.02,num2str(c_0_max));
+
+plot([min(x_c0),c_0_min],invall_alpha/2*[1,1],'k.:');
+text(min(x_c0),invall_alpha/2,num2str(invall_alpha/2));
+
+plot([min(x_c0),c_0_max],(1-invall_alpha/2)*[1,1],'k.:');
+text(min(x_c0),(1-invall_alpha/2),num2str((1-invall_alpha/2)));
+title('Cumulative Normal distribution c_0')
+xlabel('X');
+ylabel('P(c_0<X)');
+
+%%
+%c_1
+c_1s = (y-(c_0))./x_1;
+MU = mean(c_1s);
+SIGMA = std(c_1s);
+c_1_min = norminv(invall_alpha/2,MU,SIGMA);
+c_1_max = norminv(1-invall_alpha/2,MU,SIGMA);
+c_1_95_intervall2 = [c_1_min,c_1_max];
+
+figure(11);
+x_c1 = linspace(MU-3*SIGMA,MU+3*SIGMA,100);
+Y = normcdf(x_c1,MU,SIGMA);
+
+plot(x_c1,Y,'b-');
+hold on;
+plot([c_1_min,c_1_min],[0,normcdf(c_1_min,MU,SIGMA)],'k.:');
+text(c_1_min,0.02,num2str(c_1_min));
+
+plot([c_1_max,c_1_max],[0,normcdf(c_1_max,MU,SIGMA)],'k.:');
+text(c_1_max,0.02,num2str(c_1_max));
+
+plot([min(x_c1),c_1_min],invall_alpha/2*[1,1],'k.:');
+text(min(x_c1),invall_alpha/2,num2str(invall_alpha/2));
+
+plot([min(x_c1),c_1_max],(1-invall_alpha/2)*[1,1],'k.:');
+text(min(x_c1),(1-invall_alpha/2),num2str((1-invall_alpha/2)));
+title('Cumulative Normal distribution c_1')
+xlabel('X');
+ylabel('P(c_1<X)');
+
+%%
+A = data(:,1);
+alphas = [];
+betas = [];
+speciment_numbers = [1:6,8:68];
+indexes = speciment_numbers+1;
+for i=1:length(speciment_numbers)
+
+    N_ = data(:,indexes(i));
+    [alpha_, beta_] = regression_virkler(N_,A);
+    alphas(i)=alpha_;
+    betas(i)=beta_;
+end
+
+figure(12);
+hist(alphas,10);
+hold on;
+plot(alpha_95_intervall,[0,0],'ro', 'MarkerSize',12,'MarkerFaceColor','r');
+xlabel('\alpha');
+ylabel('Number of values');
+title('Histogram of \alpha for all the speciments');
+
+figure(13);
+hist(betas,10);
+hold on;
+plot(beta_95_intervall,[0,0],'ro', 'MarkerSize',12, 'MarkerFaceColor','r');
+
+%%
+% 99.99% Confidence interval.
+
+[coeffs,coeffs_intervalls_9999] = regress(y,X,0.001);
+c_0_9999_intervall = coeffs_intervalls_9999(1,:);
+c_1_9999_intervall = coeffs_intervalls_9999(2,:);
+
+beta_9999_intervall = exp(c_0_9999_intervall);
+alpha_9999_intervall = c_1_9999_intervall;
+
+figure(12);
+plot(alpha_9999_intervall,[0,0],'gs', 'MarkerSize',12, 'MarkerFaceColor','g');
+legend('All speciments','No 7 95% intervall', 'No 7 99.99% intervall');
+
+figure(13);
+plot(beta_9999_intervall,[0,0],'gs', 'MarkerSize',12, 'MarkerFaceColor','g');
+legend('All speciments','No 7 95% intervall', 'No 7 99.99% intervall');
+
+figure(14);
+for i=1:length(speciment_numbers)
+    N_ = data(:,indexes(i));
+    p1 = plot(A,N_,'b-','LineWidth',2);
+    hold on;
+    p1.Color(4) = 0.15;
+end;
+xlabel('A (Crack length)');
+ylabel('N (Number of oscillations)');
+title('All the rest speciments');
+
+%%
+% Save figures:
+exportgraphics(figure(1),'data.pdf');
+exportgraphics(figure(2),'dNdA.pdf');
+exportgraphics(figure(3),'ln_dNdA.pdf');
+exportgraphics(figure(4),'dNdA_regression.pdf');
+exportgraphics(figure(5),'N_regression.pdf');
+exportgraphics(figure(6),'normplot.pdf');
+exportgraphics(figure(7),'error_vs_y.pdf');
+exportgraphics(figure(8),'error_vs_x.pdf');
+exportgraphics(figure(9),'variance.pdf');
+exportgraphics(figure(10),'distribution_c0.pdf');
+exportgraphics(figure(11),'distribution_c1.pdf');
+exportgraphics(figure(12),'all_alpha.pdf');
+exportgraphics(figure(13),'all_beta.pdf');
+exportgraphics(figure(14),'all_data.pdf');
+
 
 
 

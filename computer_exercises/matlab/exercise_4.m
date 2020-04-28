@@ -72,6 +72,7 @@ hold on;
 plot(x,y); 
 size=400;
 x1=rand(size,1);
+y1=rand(size,1);
 plot(x1,y1,'b.');
 inds=find((x1.^2+y1.^2)<1);
 R=length(inds)/size;
