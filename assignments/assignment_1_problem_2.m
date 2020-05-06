@@ -101,23 +101,45 @@ c_0_ = (S_y-c_1_*S_x)/n;
 % --> c_1=0
 % --> y = c_0
 
-xest = y_regress;
+V1=1;
+V2=(n-2);
 
-SSR=sum((xest-mean(y)).^2);
-SSE=sum((y-xest).^2);
-SST=sum((y-mean(y)).^2);
-% you could check if SST=SSR+SSE
-if ((SST-(SSR+SSE))/(SSR+SSE)>0.01)
-    warning('SST=SSR+SSE Failed');
-end
+X0=[ones(n,1)];
+coeffs0 = regress(y,X0);
+y_0 =X0*coeffs0;
 
-MSR = SSR/1;
-MSE = SSE/(n-2);
+figure(16);
+plot(x_1,y);
+hold on;
+plot(x_1,y_regress);
+plot(x_1,y_0);
+legend('Data','Present regression model','H_0');
+xlabel('ln(A)');
+ylabel('ln(dN/dA)');
+title('ANOVA test H_0:\alpha=0');
 
-F_ratio=(MSR)/(MSE);
-P=1-fcdf(F_ratio, 1,n-2);
+SSRu = sum((y-y_regress).^2);
+SSRr = sum((y-y_0).^2);
+F_ratio = ((SSRr-SSRu)/V1) / (SSRu/(V2));
 
-if F_ratio > P
+F=finv(0.95,V1,V2);
+
+figure(15);
+X_ =linspace(0,2*F,100);
+Y_ = fcdf(X_,V1,V2);
+plot(X_,Y_);
+hold on;
+plot(F,0.95,'ro');
+plot([F,F],[0,0.95],'k.:');
+text(F,0.02,[' F=',num2str(F)]);
+plot([0,F],[0.95,0.95],'k.:');
+text(0,0.93,' P=0.95');
+
+title(['F cumulative distribution function (DOF: ',num2str(V1),', ',num2str(V2), ')']);
+xlabel('x');
+ylabel('P(F<x)');
+
+if F_ratio > F
     disp('alpha=0 Rejected!!!');
 else
     disp('alpha=0 Accepted');
@@ -321,6 +343,9 @@ exportgraphics(figure(11),'distribution_c1.pdf');
 exportgraphics(figure(12),'all_alpha.pdf');
 exportgraphics(figure(13),'all_beta.pdf');
 exportgraphics(figure(14),'all_data.pdf');
+exportgraphics(figure(15),'F-statistics.pdf');
+exportgraphics(figure(16),'H0-regression.pdf');
+
 
 
 
