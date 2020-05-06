@@ -33,7 +33,9 @@ MSR = SSR/1;
 MSE = SSE/(N-2);
 
 F_ratio=(MSR)/(MSE);
-P=1-fcdf(F_ratio, 1,N-2);
+% P=1-fcdf(F_ratio, 1,N-2);
+P=finv(0.95,1,N-2);
+
 
 if F_ratio > P
     disp('X=b0 Rejected!!!');
