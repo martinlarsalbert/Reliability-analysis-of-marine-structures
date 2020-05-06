@@ -1,15 +1,13 @@
-function result = simulate(data, N)
+function result = simulate(C, MEAN, N)
 
 % N : Number of simulations (Number of simulated voyages)
+n_seastates = length(MEAN);
 
-n_seastates = length(data.MEAN);
-[V D]=eig(data.SIGMA);
-C=(V*sqrt(D))';  %Calculate transformation matrix with Eigen decomposition
 
 %%
 
 X=normrnd(0,1,n_seastates,N);
-mean_values = data.MEAN*ones(1,N);
+mean_values = MEAN*ones(1,N);
 
 Z0=real(C'*X);  % (Z return as complex so taking the real part, unsure about this one...)
 Z=Z0+mean_values;
