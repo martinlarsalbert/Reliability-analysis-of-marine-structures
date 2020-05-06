@@ -60,7 +60,22 @@ title('Check variance convergence');
 %% ToDo: Check confidence, how?
 
 %%
+% Fatigue reliability analysis
+T=5;   % Extrapolation period
+T0=10;  % 10 years measurement period
 
+E_log10_alpha = 12.76;
+E_D = means(end);
+var_alpha=10;
+var_e=0.14;
+var_ee=0.1;
+
+K=T0/T; 
+std_D=sqrt(vars(end));
+mu_D=means(end);
+CV_D=std_D/mu_D;
+
+beta = (E_log10_alpha-log10(T/T0)-log10(E_D)) / sqrt(var_alpha+K*CV_D.^2+var_e+var_ee);
 
 
 % Save figures:
