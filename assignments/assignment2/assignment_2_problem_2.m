@@ -14,9 +14,34 @@ data_course_2 = load('COURSE2.mat');  % mean values and covarianve matrix for co
 C2=(V*sqrt(D))';  %Calculate transformation matrix with Eigen decomposition
 
 
-N=100;
+N=30;
 result_course_1 = simulate(C1, data_course_1.MEAN, N);
 result_course_2 = simulate(C2, data_course_2.MEAN, N);
+
+%%
+figure(3);
+p1 = plot(result_course_1.Hs);
+for i=1:length(p1)
+    p1(i).Color(4) = 0.25;
+end
+hold on;
+
+plot(exp(data_course_1.MEAN),'r-','LineWidth',2);
+legend('Mean significant wave height'); 
+
+xlabel('Sea state number');
+ylabel('Significant wave height [m]');
+title('Significant wave height Monte Carlo Simulations Course 1 ');
+
+
+figure(4);
+[X,Y] = meshgrid(1:length(data_course_1.MEAN),1:length(data_course_1.MEAN));
+contourf(X,Y,data_course_1.SIGMA);
+title('Covariance matrix Course 1');
+xlabel('Sea state number');
+ylabel('Sea state number');
+colorbar();
+
 %%
 D_voy = result_course_1.D_voy + result_course_2.D_voy; 
 mean(D_voy)
@@ -29,6 +54,7 @@ means = [];
 vars = [];
 
 ns = [100,1000,3000,5000,7000,10000,20000];
+
 for i=1:length(ns)
     n=ns(i);
     r1 = simulate(C1, data_course_1.MEAN, n);
@@ -73,9 +99,10 @@ std_D = sqrt(var_D);
 [P_1000,beta_1000] = fatigue_probability(mu_D, std_D, 1000)
 
 
-
-% Save figures:
-%exportgraphics(figure(1),'data.pdf');
+%%
+%Save figures:
+exportgraphics(figure(3),'mean_wave_course_1.pdf');
+exportgraphics(figure(4),'covariance_course_1.pdf');
 
 
 
