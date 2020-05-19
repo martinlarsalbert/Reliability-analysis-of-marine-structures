@@ -70,6 +70,7 @@ std_D = sqrt(var_D);
 [P_5,beta_5] = fatigue_probability(mu_D, std_D, 5)
 [P_10,beta_10] = fatigue_probability(mu_D, std_D, 10)
 [P_100,beta_100] = fatigue_probability(mu_D, std_D, 100)
+[P_1000,beta_1000] = fatigue_probability(mu_D, std_D, 1000)
 
 
 
