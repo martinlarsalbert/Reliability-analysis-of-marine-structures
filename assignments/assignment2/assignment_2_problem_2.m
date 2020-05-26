@@ -65,6 +65,14 @@ for i=1:length(ns)
      
 end
 
+%%
+figure(5);
+normplot(log(D_voy_));
+y_=log(D_voy_);
+
+figure(6);
+histogram(D_voy_,100,'Normalization','probability');
+
 figure(1);
 plot(ns,means,'o');
 ylims = ylim();

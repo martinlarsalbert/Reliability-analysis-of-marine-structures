@@ -15,8 +15,8 @@ figure(1);
 plot(Hs);
 
 % Compute and plot the empirical distribution of the yearly maxima:
-number_of_years = 2012-1979;
-year_length = (length(Hs) - mod(length(Hs), number_of_years))/number_of_years;
+number_of_years = 2012-1979
+year_length = (length(Hs) - mod(length(Hs), number_of_years))/number_of_years
 
 year_start_index=1:year_length:length(Hs);
 year_stop_index=year_start_index(2:end)-1;
@@ -70,7 +70,7 @@ Xi2 = wchi2inv(0.95,1);
 if DEV > Xi2
     disp('Gumbel is rejected');
 else
-    disp('Gumbel is accepted');
+    disp('Gumbel is not rejected');
 end;
 
 %%

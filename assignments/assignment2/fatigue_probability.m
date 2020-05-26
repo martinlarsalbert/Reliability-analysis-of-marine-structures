@@ -17,4 +17,4 @@ E_D=mu_D;
 CV_D=std_D/mu_D;
 
 beta = (E_log10_alpha-log10(T/T0)-log10(E_D)) / sqrt(var_alpha+K*CV_D.^2+var_e+var_ee);
-P = 1-normcdf(beta,1,1)
+P = 1-normcdf(beta,0,1);
