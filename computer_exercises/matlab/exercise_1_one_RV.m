@@ -18,13 +18,13 @@ plot(sort(x),'.');
 
 F1(:,1)=sort(x);
 F1(:,2)=(1:N)/N;
-figure();
+figure(1);
 plot(F1(:,1),F1(:,2),'b.')
 hold on
 
 %%
 %Alternatively, the calculation could be done by Matlab wafo toolbox command “empdistr”,
-
+figure(2);
 [F X]=ecdf(x);
 F2 = [X F];
 plot(F2(1:50:end,1),F2(1:50:end,2),"ko");
@@ -53,15 +53,36 @@ x095=norminv(0.95, 10, 30)
 % while X, Y in [0, +inf). 
 % The joint pdf and cdf are represented by fX,Y(x,y) and FX,Y(x,y), respectively. 
 
-
-
 X1=normrnd(0,1,1000,1);
 X2=normrnd(0,1,1000,1);
 X=X1+0.3*X2;
 Y=-0.4*X1+0.1*X2;
 Z=X1-X2;
-R=corrcoef([X Y Z])
-SIGMA=cov([X,Y,Z])
+
+% Coviariance matrix
+% C(X,Y) = E(X*Y) - E(X)*E(Y)
+C_xx = mean(X.*X)-mean(X)*mean(X)
+C_xy = mean(X.*Y)-mean(X)*mean(Y)
+C_xz = mean(X.*Z)-mean(X)*mean(Z)
+
+dofs = {X,Y,Z}
+[rows,columns] = size(dofs);
+for i=1:columns
+    for j=1:columns
+        R(i,j) = mean(dofs{i}.*dofs{j}) - mean(dofs{i})*mean(dofs{j});
+    end;
+end;
+R
+
+for i=1:columns
+    for j=1:columns
+        SIGMA(i,j) = R(i,j)/(std(dofs{i})*std(dofs{j}));
+    end;
+end;
+SIGMA
+
+R_=cov([X,Y,Z],1)  % the 1 is so that normalizes by N
+SIGMA_=corrcoef([X Y Z])
 
 
 
